@@ -112,7 +112,7 @@ struct Memory_map_elem {
 
 // variables
 #define MEMORY_MAP_MAX_SECTIONS 10
-extern Memory_map_elem Memory_var_arr[];
+extern Memory_map_elem* Memory_var_arr;
 extern uint32 Memory_var_arrlen;
 
 extern uint32 Memory_var_endianness;	// 0: big(0x1234 -> 0:0x12, 1:0x34), 1: little(0x1234, 0:0x34, 1:0x12)

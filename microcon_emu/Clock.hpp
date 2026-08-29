@@ -49,7 +49,7 @@ extern uint32 Clock_var_vectormode;	// shows what mode the scheduler is running 
 extern uint32 Clock_var_poweron; // 0 when regen, 1 when ready to run
 
 /* scheduler - hint for how many cycles it can use before handing off to another peri */
-extern uint32 Clock_var_availcycles[CLOCK_MAX_SCHEDULE_SIZE];
+extern uint32* Clock_var_availcycles;
 /* user - acknowledge and send cycles actually used, so that the scheduler can skip next iterations */
 /* always set this 1 by default */
 extern uint32 Clock_var_usecycles;
@@ -73,11 +73,11 @@ struct Clock_struct {
 };
 
 extern uint32 Clock_arr_map;
-extern struct Clock_struct Clock_arr[CLOCK_MAX_SCHEDULE_SIZE];
+extern struct Clock_struct* Clock_arr;
 
 extern uint32 Clock_var_maxindex;
-extern uint32 Clock_tickratearr[CLOCK_MAX_SCHEDULE_SIZE];
-extern uint32 Clock_div_arr[CLOCK_MAX_SCHEDULE_SIZE];
+extern uint32* Clock_tickratearr;
+extern uint32* Clock_div_arr;
 
 
 /* Clock schedule vector 

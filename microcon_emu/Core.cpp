@@ -99,6 +99,11 @@ void test_peri_print() {
 
 }
 
+/* Peripheral for periodic logalloc pool dumps */
+void dump_peripheral() {
+    logalloc_dump_pool();
+}
+
 enum hell { op321, op123, op456, op654, op234, op432, op111 };
 
 void hello_opt(int* data, int* value) {
@@ -677,7 +682,7 @@ void Core_start(Thread_data* mydata) {
 	/* DUMP 6: Final state after all allocator tests complete */
 	logalloc_dump_pool();
 	
-	exit(0);
+	// exit(0);
 
 
 	Clock_init();
@@ -695,7 +700,7 @@ void Core_start(Thread_data* mydata) {
 	struct Clock_struct testmul;
 	struct Clock_struct testperi;
 
-	clockgen.baseclock = 100;	// 10hz
+	clockgen.baseclock = 100;	// 100hz
 	clockgen.clock_type = Clock_type_enum::master;
 	Clock_add(0, &clockgen);
 
@@ -748,6 +753,13 @@ void Core_start(Thread_data* mydata) {
 	testperi.clock_type = Clock_type_enum::peri;
 	testperi.objfunc = test_peri_print;
 	Clock_add(10, &testperi);
+
+	/* Add dump peripheral - runs every 1 second via testmul (multiplier=1 = 1% of 100Hz base = 1Hz) */
+	struct Clock_struct dumpPeri;
+	dumpPeri.linked_by = 9;
+	dumpPeri.clock_type = Clock_type_enum::peri;
+	dumpPeri.objfunc = dump_peripheral;
+	Clock_add(11, &dumpPeri);
 
 	Clock_ready();
 	

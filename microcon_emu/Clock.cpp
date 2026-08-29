@@ -44,7 +44,7 @@ uint32 Clock_var_poweron_prevcount = 0;
 uint32 Clock_var_poweron_interruptable = 1;
 
 /* scheduler - hint for how many cycles it can use before handing off to another peri */
-uint32 Clock_var_availcycles[CLOCK_MAX_SCHEDULE_SIZE];
+uint32* Clock_var_availcycles = NULL;
 uint32 Clock_var_availcycles_idx = 0;
 /* user - acknowledge and send cycles actually used, so that the scheduler can skip next iterations */
 /* always set this 1 by default */
@@ -68,15 +68,23 @@ uint32* Clock_schedule_vect;	// dynamically allocated
 uint32* Clock_schedule_linkvect;	// used when vectormode enabled
 uint32 Clock_schedule_vect_alloc;	// 1 when vect, 3 when vect + linkvect is allocated
 
-struct Clock_struct Clock_arr[CLOCK_MAX_SCHEDULE_SIZE];
+struct Clock_struct* Clock_arr = NULL;
 
 uint32 Clock_var_maxindex = 0;
-uint32 Clock_tickratearr[CLOCK_MAX_SCHEDULE_SIZE];
-uint32 Clock_div_arr[CLOCK_MAX_SCHEDULE_SIZE];
+uint32* Clock_tickratearr = NULL;
+uint32* Clock_div_arr = NULL;
 
 void Clock_init() 
 {
 	while (Clock_var_poweron_interruptable == 0) {}	// wait until scheduler finishes
+
+	// allocate static arrays on first init
+	if (Clock_arr == NULL) {
+		Clock_arr = (Clock_struct*)ecalloc(CLOCK_MAX_SCHEDULE_SIZE, sizeof(Clock_struct));
+		Clock_tickratearr = (uint32*)ecalloc(CLOCK_MAX_SCHEDULE_SIZE, sizeof(uint32));
+		Clock_div_arr = (uint32*)ecalloc(CLOCK_MAX_SCHEDULE_SIZE, sizeof(uint32));
+		Clock_var_availcycles = (uint32*)ecalloc(CLOCK_MAX_SCHEDULE_SIZE, sizeof(uint32));
+	}
 
 	// deallocate previous entry
 	if ((Clock_schedule_vect_alloc & 0x1) != 0x0) {

@@ -1,6 +1,6 @@
 #include "Memory.hpp"
 
-Memory_map_elem Memory_var_arr[MEMORY_MAP_MAX_SECTIONS];
+Memory_map_elem* Memory_var_arr = NULL;
 uint32 Memory_var_arrlen = 0;
 uint32 Memory_var_access_err = 0;
 
@@ -41,6 +41,10 @@ void Memory_addMap(uint32 base, uint32 size, uint32 attrib) {
 
 }
 void Memory_init() {
+	// allocate Memory_var_arr on first init
+	if (Memory_var_arr == NULL) {
+		Memory_var_arr = (Memory_map_elem*)ecalloc(MEMORY_MAP_MAX_SECTIONS, sizeof(Memory_map_elem));
+	}
 
 	Memory_var_endianness = 0;
 	Memory_var_arrlen = 0;
