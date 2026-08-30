@@ -2,6 +2,26 @@
 #include "Proxy.hpp"
 #include <string.h>
 
+/* NOTE: for allocator to be smp, for stuff like RTOS we cannot afford locking,
+ * and we definitely cannot afford to have one core screw up the entire allocator.
+ * so lets keep it minimal. per-core arena. maybe even per-task and per-app arenas.
+ * arena: separated mini-allocators that do not have influence over other arenas.
+ * we could implement ipc on top of per-core arenas.
+ * 
+ * NOTE2: replace header magic number with CRC checks for sweet sweet ASIL compat.
+ * for RELATIVE INDEXING:
+ * - CRC32 + 16bit addressing
+ * - CRC16 + 24bit addressing (current structure)
+ * for DIRECT(FULL) INDEXING:
+ * - CRC32 maybe?
+ * 
+ * NOTE3: to validate header's position and data...
+ * current index based XOR encryption does validate if the header position is correct.
+ * so we only need to do CRC checks for current header only; we only need to validate if the header data is correct.
+ * (trying to do prev + next CRC will be a massive headache)
+ * 
+ */
+
 /* to be - generated macros & variables */
 #define MAX_POOL_SIZE 0x180000	/* 1.5MB */
 #define USE_EMUPOOL /* uncomment to enable EMUPOOL */
